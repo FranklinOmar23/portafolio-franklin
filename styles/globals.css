@@ -8,6 +8,16 @@
   }
 }
 
+/* Ocultar scrollbar */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
 @layer base {
   :root {
     --font-sans: var(--font-geist-sans);

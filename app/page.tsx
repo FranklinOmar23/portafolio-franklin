@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { ImageUpload } from "@/components/image-upload"
+import { ImageDisplay } from "../components/image-upload"
 import { StarsBackground } from "@/components/stars-background"
 import { FloatingParticles } from "@/components/floating-particles"
 import {
@@ -35,11 +35,23 @@ import Link from "next/link"
 import { AnimatedSection } from "@/components/animated-section"
 import { StaggeredList } from "@/components/staggered-list"
 import { RevealOnScroll } from "@/components/reveal-on-scroll"
+import emailjs from "@emailjs/browser"
+
+// Inicializar EmailJS con variables de entorno
+emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "")
 
 export default function Portfolio() {
   const [profileImage, setProfileImage] = useState("/placeholder.svg?height=500&width=400")
   const [isVisible, setIsVisible] = useState(false)
   const [activeSection, setActiveSection] = useState("inicio")
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    asunto: "",
+    mensaje: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
 
   useEffect(() => {
     setIsVisible(true)
@@ -61,6 +73,44 @@ export default function Portfolio() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage("")
+
+    try {
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
+        {
+          to_email: "fdisla@arcodedominicana.com",
+          from_email: formData.email,
+          from_name: formData.nombre,
+          subject: formData.asunto,
+          message: formData.mensaje,
+        }
+      )
+
+      setMessage("✅ ¡Mensaje enviado correctamente!")
+      setFormData({ nombre: "", email: "", asunto: "", mensaje: "" })
+
+      setTimeout(() => setMessage(""), 5000)
+    } catch (error) {
+      console.error("Error:", error)
+      setMessage("❌ Error al enviar el mensaje. Intenta de nuevo.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const skills = [
     { name: "Node.js", icon: Server, category: "Backend" },
     { name: "React", icon: Code2, category: "Frontend" },
@@ -79,42 +129,36 @@ export default function Portfolio() {
     { name: "Active Directory", icon: Shield, category: "Infrastructure" },
     { name: "IIS", icon: Globe, category: "Infrastructure" },
     { name: "PowerShell", icon: Code2, category: "Infrastructure" },
-    { name: "Hyper-V", icon: Server, category: "Infrastructure" },
   ]
 
   const projects = [
     {
-      title: "Sistema de Gestión Empresarial",
+      title: "Sistema de Gestión Hospitalaria",
       description:
-        "Plataforma completa desarrollada con C# y React para gestión de recursos empresariales con integración a SQL Server.",
-      tech: ["C#", "React", "SQL Server", "ASP.NET"],
-      image: "/placeholder.svg?height=200&width=300",
+        "Aplicación completa desarrollada en Nodejs y React para la administración de pacientes, médicos y citas médicas. Incluye control de inventario, reportes y gestión de usuarios con diferentes roles.",
+      tech: ["NodeJS", "React", "SQL Server", "Express"],
+      image: "/hospital-system.png",
     },
     {
-      title: "Plugin WordPress Personalizado",
-      description: "Plugin avanzado para WordPress que automatiza procesos de facturación y gestión de clientes.",
-      tech: ["WordPress", "PHP", "JavaScript", "MySQL"],
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      title: "Dashboard en Tiempo Real",
-      description: "Dashboard en tiempo real con autenticación y base de datos en Supabase, desarrollado con Next.js.",
-      tech: ["Next.js", "Supabase", "PostgreSQL", "Tailwind"],
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      title: "API REST con Node.js",
+      title: "Generador de Volantes de Pago",
       description:
-        "API robusta para aplicación móvil con autenticación JWT e integración con múltiples bases de datos.",
-      tech: ["Node.js", "Express", "PostgreSQL", "JWT"],
-      image: "/placeholder.svg?height=200&width=300",
+        "Herramienta desarrollada en Python para automatizar la creación de volantes de pago en PDF a partir de datos de nómina. Reduce tiempos de generación y mejora la precisión en los cálculos.",
+      tech: ["Python", "Pandas", "ReportLab", "Excel"],
+      image: "/payroll-generator.png",
     },
     {
-      title: "Infraestructura Windows Server",
+      title: "Sistema de Organización de Viajes",
       description:
-        "Diseño e implementación de infraestructura completa con Windows Server, Active Directory, DNS, DHCP y políticas de grupo.",
-      tech: ["Windows Server", "Active Directory", "PowerShell", "Hyper-V"],
-      image: "/placeholder.svg?height=200&width=300",
+        "Plataforma web que permite gestionar reservas, clientes y pagos para agencias de viajes. Incluye panel administrativo, historial de excursiones y control de cupos disponibles.",
+      tech: ["React", "Vite", "SupaBase", "NodeJS"],
+      image: "/travel-system.png",
+    },
+    {
+      title: "Generador y Gestor de PDF",
+      description:
+        "Aplicación web desarrollada en React que permite convertir imágenes en archivos PDF, separar documentos por páginas y unir varios PDF en uno solo. Una herramienta práctica y rápida para la gestión de documentos digitales.",
+      tech: ["React", "JavaScript", "PDF.js", "FileSaver.js"],
+      image: "/pdf-generator.png",
     },
   ]
 
@@ -123,7 +167,7 @@ export default function Portfolio() {
       title: "Cofundador & Desarrollador Full Stack",
       company: "Arcode Dominicana",
       companyLink: "https://arcodedominicana.com",
-      period: "2020 - Presente",
+      period: "2025 - Presente",
       description:
         "Cofundador de empresa tecnológica especializada en desarrollo de software. Liderazgo técnico, arquitectura de sistemas y desarrollo full stack con tecnologías modernas.",
       icon: Rocket,
@@ -131,7 +175,7 @@ export default function Portfolio() {
     {
       title: "Encargado de Soporte Técnico",
       company: "TSI Dominicana",
-      period: "2019 - Presente",
+      period: "2023 - Presente",
       description:
         "Responsable del soporte técnico especializado, administración y creación de servidores Windows Server, gestión de Active Directory, configuración de IIS y resolución de incidencias críticas de infraestructura, aplicando metodologías ágiles como Scrum Master certificado.",
       icon: Shield,
@@ -139,7 +183,7 @@ export default function Portfolio() {
     {
       title: "Scrum Master & Desarrollador",
       company: "Proyectos Freelance",
-      period: "2018 - 2020",
+      period: "2021 - presente",
       description:
         "Gestión ágil de proyectos de desarrollo, facilitación de ceremonias Scrum y desarrollo de aplicaciones web con React y Node.js.",
       icon: Users,
@@ -148,16 +192,13 @@ export default function Portfolio() {
 
   const certifications = [
     "Certified Scrum Master (CSM)",
-    "Especialista en Microsoft SQL Server",
     "Desarrollo de Plugins WordPress",
-    "Desarrollador Certificado Supabase",
     "Administración de Windows Server",
     "Especialista en Microsoft Active Directory",
   ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-slate-800 transition-colors relative">
-      {/* Agregar aquí los componentes de fondo */}
       <StarsBackground />
       <FloatingParticles />
 
@@ -166,7 +207,8 @@ export default function Portfolio() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div
-              className={`flex items-center space-x-2 transition-all duration-500 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
+              className={`flex items-center space-x-2 transition-all duration-500 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
+                }`}
             >
               <Code2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400 animate-pulse" />
               <span className="text-xl font-bold text-gray-900 dark:text-white">Franklin Disla</span>
@@ -174,67 +216,57 @@ export default function Portfolio() {
             <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="#inicio"
-                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-                  activeSection === "inicio" ? "text-emerald-600 dark:text-emerald-400" : ""
-                }`}
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "inicio" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
               >
                 Inicio
                 <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${
-                    activeSection === "inicio" ? "w-full" : ""
-                  }`}
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeSection === "inicio" ? "w-full" : ""
+                    }`}
                 ></span>
               </Link>
               <Link
                 href="#sobre-mi"
-                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-                  activeSection === "sobre-mi" ? "text-emerald-600 dark:text-emerald-400" : ""
-                }`}
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "sobre-mi" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
               >
                 Sobre Mí
                 <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${
-                    activeSection === "sobre-mi" ? "w-full" : ""
-                  }`}
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeSection === "sobre-mi" ? "w-full" : ""
+                    }`}
                 ></span>
               </Link>
               <Link
                 href="#proyectos"
-                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-                  activeSection === "proyectos" ? "text-emerald-600 dark:text-emerald-400" : ""
-                }`}
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "proyectos" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
               >
                 Proyectos
                 <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${
-                    activeSection === "proyectos" ? "w-full" : ""
-                  }`}
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeSection === "proyectos" ? "w-full" : ""
+                    }`}
                 ></span>
               </Link>
               <Link
                 href="#experiencia"
-                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-                  activeSection === "experiencia" ? "text-emerald-600 dark:text-emerald-400" : ""
-                }`}
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "experiencia" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
               >
                 Experiencia
                 <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${
-                    activeSection === "experiencia" ? "w-full" : ""
-                  }`}
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeSection === "experiencia" ? "w-full" : ""
+                    }`}
                 ></span>
               </Link>
               <Link
                 href="#contacto"
-                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-                  activeSection === "contacto" ? "text-emerald-600 dark:text-emerald-400" : ""
-                }`}
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "contacto" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
               >
                 Contacto
                 <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${
-                    activeSection === "contacto" ? "w-full" : ""
-                  }`}
+                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeSection === "contacto" ? "w-full" : ""
+                    }`}
                 ></span>
               </Link>
               <ThemeToggle />
@@ -252,7 +284,8 @@ export default function Portfolio() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div
-                className={`space-y-4 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+                className={`space-y-4 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                  }`}
               >
                 <Badge
                   variant="outline"
@@ -268,20 +301,22 @@ export default function Portfolio() {
                   </span>
                 </h1>
                 <h2 className="text-2xl lg:text-3xl font-semibold text-gray-700 dark:text-gray-300">
-                  Desarrollador Full Stack & Cofundador
+                  Desarrollador Full Stack
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Cofundador de Arcode Dominicana y Encargado de Soporte en TSI Dominicana. Especializado en Node.js,
-                  React, C#, administración de servidores Windows Server y metodologías ágiles como Scrum Master
-                  certificado.
+                  Soy Franklin, cofundador de Arcode Dominicana y desarrollador Freelancer. Me apasiona crear soluciones que realmente le hagan la vida más fácil a la gente, ya sea desarrollando con Node.js, React o C#, o asegurándome de que todo funcione como debe en los servidores.
                 </p>
               </div>
               <div
-                className={`flex flex-wrap gap-4 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+                className={`flex flex-wrap gap-4 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                  }`}
               >
                 <Button
                   size="lg"
                   className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  onClick={() =>
+                    window.open(`https://wa.me/18099735660?text=Hola!%20Me%20gustaría%20contactarte.`, "_blank")
+                  }
                 >
                   <Mail className="w-5 h-5 mr-2" />
                   Contáctame
@@ -290,13 +325,15 @@ export default function Portfolio() {
                   variant="outline"
                   size="lg"
                   className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400 dark:hover:bg-emerald-950 bg-transparent transform hover:scale-105 transition-all duration-300"
+                  onClick={() => window.open("https://github.com/franklinomar23", "_blank")}
                 >
                   <Github className="w-5 h-5 mr-2" />
                   Ver Proyectos
                 </Button>
               </div>
               <div
-                className={`flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400 transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+                className={`flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400 transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                  }`}
               >
                 <div className="flex items-center space-x-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-300">
                   <MapPin className="w-4 h-4" />
@@ -314,16 +351,13 @@ export default function Portfolio() {
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                 </div>
-                <div className="flex items-center space-x-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-300">
-                  <Shield className="w-4 h-4" />
-                  <span>TSI Dominicana</span>
-                </div>
               </div>
             </div>
             <div
-              className={`relative transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+              className={`relative transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                }`}
             >
-              <ImageUpload currentImage={profileImage} onImageChange={setProfileImage} />
+              <ImageDisplay imageUrl="/Omar.jpeg" />
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 dark:from-emerald-600 dark:to-teal-700 rounded-2xl transform rotate-6 opacity-20 -z-10 animate-pulse"></div>
             </div>
           </div>
@@ -332,10 +366,7 @@ export default function Portfolio() {
 
       {/* About Section */}
       <AnimatedSection animation="fade-up" duration={0.8}>
-        <section
-          id="sobre-mi"
-          className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 transition-colors relative z-10"
-        >
+        <section id="sobre-mi" className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 transition-colors relative z-10">
           <div className="max-w-6xl mx-auto">
             <AnimatedSection animation="fade-down" delay={0.2}>
               <div className="text-center mb-12">
@@ -368,26 +399,25 @@ export default function Portfolio() {
                     Node.js, React, C# y bases de datos como SQL Server y PostgreSQL.
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    En mi rol como Encargado de Soporte en TSI Dominicana, gestiono equipos técnicos, administro
-                    servidores Windows Server, configuro Active Directory e IIS, y resuelvo incidencias críticas de
-                    infraestructura, aplicando metodologías ágiles como Scrum Master certificado.
+                    En mi rol como Encargado de Soporte en una empresa de tecnologia, gestiono equipos técnicos, administro
+                    servidores Windows Server, configuro Active Directory e IIS, y resuelvo incidencias críticas
+                    aplicando metodologías ágiles como Scrum Master certificado.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-950 rounded-lg transform hover:scale-110 hover:shadow-lg transition-all duration-300">
-                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">60+</div>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">10+</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Proyectos Completados</div>
                   </div>
                   <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-950 rounded-lg transform hover:scale-110 hover:shadow-lg transition-all duration-300">
-                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">6+</div>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">3+</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Años de Experiencia</div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Certificaciones</h4>
-                  {/* Wrap certifications list with StaggeredList */}
                   <StaggeredList staggerDelay={0.05} animation="fade-right" className="space-y-2">
                     {certifications.map((cert, index) => (
                       <div key={index} className="flex items-center space-x-2">
@@ -412,7 +442,6 @@ export default function Portfolio() {
                         <div
                           key={index}
                           className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950 transition-all duration-300 transform hover:scale-105 hover:shadow-md cursor-pointer"
-                          style={{ animationDelay: `${index * 50}ms` }}
                         >
                           <skill.icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{skill.name}</span>
@@ -439,7 +468,7 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                {/* Other Skills */}
+                {/* CMS & Gestión */}
                 <div className="space-y-3">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200">CMS & Gestión</h4>
                   <div className="grid grid-cols-2 gap-3">
@@ -482,10 +511,7 @@ export default function Portfolio() {
 
       {/* Projects Section */}
       <AnimatedSection animation="zoom-in" duration={0.8}>
-        <section
-          id="proyectos"
-          className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 transition-colors relative z-10"
-        >
+        <section id="proyectos" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 transition-colors relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-300">
@@ -500,36 +526,31 @@ export default function Portfolio() {
               {projects.map((project, index) => (
                 <div
                   key={index}
-                  className={`flex flex-col ${
-                    index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
-                  } gap-8 items-center group mb-16`}
+                  className={`flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+                    } gap-8 items-stretch group mb-16`}
                 >
                   {/* Image Side */}
                   <div className="w-full lg:w-1/2 relative">
-                    <div className="relative overflow-hidden rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-500">
-                      <div className="aspect-video relative">
-                        <img
-                          src={project.image || "/placeholder.svg"}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      </div>
+                    <div className="relative overflow-hidden rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-500 h-full">
+                      <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
                       {/* Floating Number */}
                       <div className="absolute top-4 right-4 w-16 h-16 bg-emerald-600 dark:bg-emerald-500 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-500">
                         <span className="text-2xl font-bold text-white">0{index + 1}</span>
                       </div>
                     </div>
+
                     {/* Decorative Element */}
                     <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-emerald-200 dark:bg-emerald-900 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 -z-10"></div>
                   </div>
 
                   {/* Content Side */}
-                  <div className="w-full lg:w-1/2 space-y-6">
+                  <div className="w-full lg:w-1/2 space-y-6 flex flex-col justify-center">
                     <div className="space-y-4">
                       <Badge
                         variant="outline"
-                        className="text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                        className="text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 w-fit"
                       >
                         <Rocket className="w-3 h-3 mr-1" />
                         Proyecto Destacado
@@ -555,41 +576,10 @@ export default function Portfolio() {
                         </div>
                       ))}
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-4 pt-4">
-                      <Button
-                        variant="default"
-                        className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl group/btn"
-                      >
-                        <Globe className="w-4 h-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                        Ver Demo
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400 dark:hover:bg-emerald-950 bg-transparent transform hover:scale-105 transition-all duration-300"
-                      >
-                        <Github className="w-4 h-4 mr-2" />
-                        Código
-                      </Button>
-                    </div>
                   </div>
                 </div>
               ))}
             </StaggeredList>
-
-            {/* View All Projects Button */}
-            <div className="text-center mt-16 relative z-10">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400 dark:hover:bg-emerald-950 bg-transparent transform hover:scale-105 transition-all duration-300 group"
-              >
-                Ver Todos los Proyectos
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </div>
           </div>
         </section>
       </AnimatedSection>
@@ -611,7 +601,6 @@ export default function Portfolio() {
               </p>
             </div>
 
-            {/* Replace experience.map() with StaggeredList */}
             <StaggeredList staggerDelay={0.2} animation="zoom-in">
               {experience.map((exp, index) => (
                 <Card
@@ -736,32 +725,57 @@ export default function Portfolio() {
               <div className="space-y-8">
                 <div className="space-y-6">
                   <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                      <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Email</h3>
-                      <p className="text-gray-600 dark:text-gray-300">franklin@arcodedominicana.com</p>
+                      <Link
+                        href="mailto:fdisla@arcodedominicana.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300"
+                      >
+                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                          <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Email</h3>
+                          <p className="text-gray-600 dark:text-gray-300">fdisla@arcodedominicana.com</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                      <Phone className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Teléfono</h3>
-                      <p className="text-gray-600 dark:text-gray-300">+1 (809) 123-4567</p>
+                      <Link
+                        href="tel:+18099735660"
+                        className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300"
+                      >
+                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                          <Phone className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Teléfono</h3>
+                          <p className="text-gray-600 dark:text-gray-300">+1 (809) 973-5660</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                      <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Ubicación</h3>
-                      <p className="text-gray-600 dark:text-gray-300">Santo Domingo, República Dominicana</p>
+                      <Link
+                        href="https://www.google.com/maps/search/Santo+Domingo+Norte,+República+Dominicana"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300"
+                      >
+                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                          <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Ubicación</h3>
+                          <p className="text-gray-600 dark:text-gray-300">Santo Domingo Norte, República Dominicana</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -775,6 +789,7 @@ export default function Portfolio() {
                       variant="outline"
                       size="icon"
                       className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400 dark:hover:bg-emerald-950 bg-transparent transform hover:scale-110 hover:rotate-12 transition-all duration-300"
+                      onClick={() => window.open("https://github.com/franklinomar23", "_blank")}
                     >
                       <Github className="w-5 h-5" />
                     </Button>
@@ -804,12 +819,16 @@ export default function Portfolio() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-0 pb-0">
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                         <input
                           type="text"
+                          name="nombre"
+                          value={formData.nombre}
+                          onChange={handleFormChange}
+                          required
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-300 hover:border-emerald-400"
                           placeholder="Tu nombre"
                         />
@@ -818,6 +837,10 @@ export default function Portfolio() {
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                         <input
                           type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleFormChange}
+                          required
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-300 hover:border-emerald-400"
                           placeholder="tu@email.com"
                         />
@@ -827,6 +850,10 @@ export default function Portfolio() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Asunto</label>
                       <input
                         type="text"
+                        name="asunto"
+                        value={formData.asunto}
+                        onChange={handleFormChange}
+                        required
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-300 hover:border-emerald-400"
                         placeholder="¿En qué puedo ayudarte?"
                       />
@@ -835,13 +862,27 @@ export default function Portfolio() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Mensaje</label>
                       <textarea
                         rows={4}
+                        name="mensaje"
+                        value={formData.mensaje}
+                        onChange={handleFormChange}
+                        required
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-300 hover:border-emerald-400"
                         placeholder="Cuéntame sobre tu proyecto..."
                       />
                     </div>
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl group">
+                    {message && (
+                      <p className={`text-sm text-center font-medium ${message.includes("✅") ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        }`}>
+                        {message}
+                      </p>
+                    )}
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl group disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       <Mail className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
-                      Enviar Mensaje
+                      {loading ? "Enviando..." : "Enviar Mensaje"}
                     </Button>
                   </form>
                 </CardContent>
@@ -859,7 +900,6 @@ export default function Portfolio() {
             <span className="text-lg font-semibold">Franklin Disla</span>
           </div>
           <p className="text-gray-400">© 2025 Franklin Disla. Todos los derechos reservados.</p>
-          <p className="text-gray-500 text-sm mt-2">Desarrollado con React, Next.js y mucho ☕</p>
           <div className="mt-4">
             <Link
               href="https://arcodedominicana.com"
