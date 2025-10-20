@@ -10,7 +10,10 @@ export const metadata: Metadata = {
   title: "Franklin Disla | Desarrollador Full Stack & Cofundador",
   description:
     "Portafolio profesional de Franklin Disla, Desarrollador Full Stack, Cofundador de Arcode Dominicana y Especialista en Soporte Técnico en TSI Dominicana.",
-    generator: 'v0.app'
+  generator: "v0.app",
+  icons: {
+    icon: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
@@ -20,6 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
