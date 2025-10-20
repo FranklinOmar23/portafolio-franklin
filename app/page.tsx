@@ -202,104 +202,93 @@ export default function Portfolio() {
       <StarsBackground />
       <FloatingParticles />
 
-{/* Navigation */}
-<nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 z-50 transition-all duration-300">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex justify-between items-center py-4">
-      {/* Logo */}
-      <Link
-        href="#inicio"
-        className={`flex items-center space-x-2 transition-all duration-500 hover:opacity-80 ${
-          isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
-        }`}
-      >
-        <Code2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400 animate-pulse" />
-        <span className="text-xl font-bold text-gray-900 dark:text-white">Franklin Disla</span>
-      </Link>
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 z-50 transition-all duration-300">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            {/* Logo */}
+            <Link
+              href="#inicio"
+              className={`flex items-center space-x-2 transition-all duration-500 hover:opacity-80 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
+                }`}
+            >
+              <Code2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+              <span className="text-xl font-bold text-gray-900 dark:text-white">Franklin Disla</span>
+            </Link>
 
-      {/* Desktop Navigation */}
-      <div className="hidden md:flex items-center space-x-8">
-        <Link
-          href="#inicio"
-          className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-            activeSection === "inicio" ? "text-emerald-600 dark:text-emerald-400" : ""
-          }`}
-        >
-          Inicio
-          <span
-            className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${
-              activeSection === "inicio" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          ></span>
-        </Link>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link
+                href="#inicio"
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "inicio" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
+              >
+                Inicio
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${activeSection === "inicio" ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                ></span>
+              </Link>
 
-        <Link
-          href="#sobre-mi"
-          className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-            activeSection === "sobre-mi" ? "text-emerald-600 dark:text-emerald-400" : ""
-          }`}
-        >
-          Sobre Mí
-          <span
-            className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${
-              activeSection === "sobre-mi" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          ></span>
-        </Link>
+              <Link
+                href="#sobre-mi"
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "sobre-mi" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
+              >
+                Sobre Mí
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${activeSection === "sobre-mi" ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                ></span>
+              </Link>
 
-        <Link
-          href="#proyectos"
-          className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-            activeSection === "proyectos" ? "text-emerald-600 dark:text-emerald-400" : ""
-          }`}
-        >
-          Proyectos
-          <span
-            className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${
-              activeSection === "proyectos" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          ></span>
-        </Link>
+              <Link
+                href="#proyectos"
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "proyectos" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
+              >
+                Proyectos
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${activeSection === "proyectos" ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                ></span>
+              </Link>
 
-        <Link
-          href="#experiencia"
-          className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-            activeSection === "experiencia" ? "text-emerald-600 dark:text-emerald-400" : ""
-          }`}
-        >
-          Experiencia
-          <span
-            className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${
-              activeSection === "experiencia" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          ></span>
-        </Link>
+              <Link
+                href="#experiencia"
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "experiencia" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
+              >
+                Experiencia
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${activeSection === "experiencia" ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                ></span>
+              </Link>
 
-        <Link
-          href="#contacto"
-          className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${
-            activeSection === "contacto" ? "text-emerald-600 dark:text-emerald-400" : ""
-          }`}
-        >
-          Contacto
-          <span
-            className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${
-              activeSection === "contacto" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          ></span>
-        </Link>
+              <Link
+                href="#contacto"
+                className={`text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300 relative group ${activeSection === "contacto" ? "text-emerald-600 dark:text-emerald-400" : ""
+                  }`}
+              >
+                Contacto
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-all duration-300 ${activeSection === "contacto" ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                ></span>
+              </Link>
 
-        {/* Theme Toggle */}
-        <ThemeToggle />
-      </div>
+              {/* Theme Toggle */}
+              <ThemeToggle />
+            </div>
 
-      {/* Mobile Theme Toggle */}
-      <div className="md:hidden">
-        <ThemeToggle />
-      </div>
-    </div>
-  </div>
-</nav>
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden">
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+      </nav>
 
       {/* Hero Section */}
       <section id="inicio" className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden relative z-10">
